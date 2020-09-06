@@ -1,6 +1,6 @@
 #! /bin/bash
 
-pgb_conf="/etc/pgbouncer/pgbouncer.ini"
+pgb_conf="/tmp/pgbouncer.ini"
 
 # header
 cat <<EOF > "$pgb_conf"
@@ -10,8 +10,9 @@ cat <<EOF > "$pgb_conf"
 EOF
 
 # content section was generated using this script
-# sed -n '/^\[pgbouncer\]/,$p' pgbouncer.ini |                                        \
-#     sed -r -e 's/^(logfile|listen_addr|listen_port)/;\1/'                           \
+# sed -n '/^\[pgbouncer\]/,$p' pgbouncer.ini |
+#     sed -r -e '/;unix_socket_dir/d'                                                 \
+#         -e 's/^(logfile|listen_addr|listen_port)/;\1/'                              \
 #         -e 's/\$/\\$/'                                                              \
 #         -e 's/^([a-z_]+) *= *([^ ]*)$/\1 = ${PGB_\U\1\E:-\2}/'                      \
 #         -e 's/^; *([a-z_]+) *= *(.*)$/;${PGB_\U\1\E:+\n}\1 = ${PGB_\U\1\E:-\2}/'
@@ -39,8 +40,6 @@ pidfile = ${PGB_PIDFILE:-/var/run/postgresql/pgbouncer.pid}
 
 ; Unix socket is also used for -R.
 ; On Debian it should be /var/run/postgresql
-;${PGB_UNIX_SOCKET_DIR:+
-}unix_socket_dir = ${PGB_UNIX_SOCKET_DIR:-/tmp}
 ;${PGB_UNIX_SOCKET_MODE:+
 }unix_socket_mode = ${PGB_UNIX_SOCKET_MODE:-0777}
 ;${PGB_UNIX_SOCKET_GROUP:+
@@ -410,15 +409,6 @@ default_pool_size = ${PGB_DEFAULT_POOL_SIZE:-20}
 
 ;; Read additional config from the /etc/pgbouncer/pgbouncer-other.ini file
 ;%include /etc/pgbouncer/pgbouncer-other.ini
-EOF
-
-# footer
-cat <<EOF >> "$pgb_conf"
-
-;; Include all db config files
-;; $ cat /etc/pgbouncer/databases/somedb.ini
-;; [databases]
-;; somedb = dbname=somedb host=somehost port=5432 user=someuser password=somepassword
 EOF
 
 # include all mounted db configs
