@@ -411,6 +411,15 @@ default_pool_size = ${PGB_DEFAULT_POOL_SIZE:-20}
 ;%include /etc/pgbouncer/pgbouncer-other.ini
 EOF
 
+# footer
+cat <<EOF >> "$pgb_conf"
+
+;; Include all db config files
+;; $ cat /etc/pgbouncer/databases/somedb.ini
+;; [databases]
+;; somedb = dbname=somedb host=somehost port=5432 user=someuser password=somepassword
+EOF
+
 # include all mounted db configs
 find /etc/pgbouncer/databases -type f | xargs -r -L1 echo "%include" >> "$pgb_conf"
 
