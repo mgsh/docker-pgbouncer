@@ -421,6 +421,7 @@ cat <<EOF >> "$pgb_conf"
 EOF
 
 # include all mounted db configs
-find /etc/pgbouncer/databases -type f | xargs -r -L1 echo "%include" >> "$pgb_conf"
+ls -1 /etc/pgbouncer/databases |
+    xargs -I{file} echo "%include /etc/pgbouncer/databases/{file}" >> "$pgb_conf"
 
 exec pgbouncer "$pgb_conf"
