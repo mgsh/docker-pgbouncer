@@ -1,6 +1,6 @@
 #! /bin/bash
 
-pgb_conf="/tmp/pgbouncer.ini"
+pgb_conf="/etc/pgbouncer/pgbouncer.ini"
 
 # header
 cat <<EOF > "$pgb_conf"
